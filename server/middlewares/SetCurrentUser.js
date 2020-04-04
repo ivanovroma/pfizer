@@ -2,7 +2,7 @@ import jsonwebtoken from 'jsonwebtoken'
 
 import UserModel from '../api/User/model'
 
-export default async (req, res, next) => {
+export default (req, res, next) => {
   const token = req.headers['authorization']
 
   // Проверяем наличие токена в запросе
@@ -26,7 +26,7 @@ export default async (req, res, next) => {
 
   // Находим пользователя в БД по _id и передаем дальше
   try {
-    const user = await UserModel.findOne({ _id: tokenObj._id })
+    const user = UserModel.findOne({ _id: tokenObj._id })
     user.password = 0
     req.user = user
     next()

@@ -7,7 +7,7 @@ import Model from './model'
 
 export const Write = async (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'user_id_required', 'user_id_invalid', 'user_not_found_by_id',
@@ -22,7 +22,7 @@ export const Write = async (req, res) => {
   
   // Валидируем форму
   const Fields = ValidationModels.getModel(req.body.form)
-  const errorForm = await ValidationFields.Check(Fields, req.body.fields)
+  const errorForm = ValidationFields.Check(Fields, req.body.fields)
   
   if (errorForm) return res.json({
     success: false,
@@ -30,7 +30,7 @@ export const Write = async (req, res) => {
   })
 
   // Проверяем есть ли уже такая запись
-  const doc = await Model.findOne({
+  const doc = Model.findOne({
     form: req.body.form,
     cardId: req.body.cardId,
     partId: req.body.partId
@@ -40,7 +40,7 @@ export const Write = async (req, res) => {
   if (doc) {
     doc.fields = req.body.fields
 
-    const updatedDoc = await doc.save()
+    const updatedDoc = doc.save()
 
     return res.json({
       success: true,
@@ -50,7 +50,7 @@ export const Write = async (req, res) => {
   
   // Если нет, то создаем запись
   try {
-    const created = await Model.create({
+    const created = Model.create({
       form: req.body.form,
       userId: req.body.userId,
       cardId: req.body.cardId,
@@ -76,7 +76,7 @@ export const Write = async (req, res) => {
 
 export const Read = async (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'card_id_required', 'card_id_invalid', 'card_not_found_by_id',
@@ -89,7 +89,7 @@ export const Read = async (req, res) => {
   })
 
   try {
-    const card = await Model.findOne({
+    const card = Model.findOne({
       form: req.body.form,
       cardId: req.body.cardId,
       partId: req.body.partId

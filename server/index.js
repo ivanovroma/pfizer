@@ -41,3 +41,5 @@ server.use('/api/user', UserRouter)
 server.use('/api/department', DepartmentRouter)
 server.use('/api/card', CardRouter)
 // Server init
+
+// brew services start mongodb-community@4.2

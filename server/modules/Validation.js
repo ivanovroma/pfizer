@@ -5,9 +5,7 @@ import ItemModel from '../api/Card/blocks/Item/model'
 
 export default {
   async Check(data) {
-    const fields = data.fields
-    const user = data.user
-    const rules = data.rules
+    const { fields, user, rules } = data
 
     for (let i = 0; i < rules.length; i++) {
       let rule = rules[i]
@@ -36,7 +34,7 @@ export default {
             message: rule
           }
       } else {
-        let result = await Rule.check(fields, user)
+        let result = Rule.check(fields, user)
         if (result) {
           return {
             object: 'validation',
@@ -58,7 +56,7 @@ export default {
     
     label_invalid: {
       subject: 'label',
-      check: async (fields) => {
+      check: (fields) => {
         const regValidLabel = /[^A-Za-zА-Яа-я,?!()0-9\s<>%.#№:-]/
         const testedLabel = regValidLabel.test(fields.label)
         if (testedLabel)
@@ -75,7 +73,7 @@ export default {
     
     name_invalid: {
       subject: 'name',
-      check: async (fields) => {
+      check: (fields) => {
         const regValidName = /[^А-Яа-я\s]/
         const testedName = regValidName.test(fields.name)
         if (testedName)
@@ -92,7 +90,7 @@ export default {
 
     login_invalid: {
       subject: 'login',
-      check: async (fields) => {
+      check: (fields) => {
         const regValidLogin = /[^A-Za-z0-9]/
         const testedLogin = regValidLogin.test(fields.login)
         if (testedLogin)
@@ -104,8 +102,8 @@ export default {
 
     login_already_exist: {
       subject: 'login',
-      check: async (fields) => {
-        const existUser = await UserModel.findOne({ login: fields.login })
+      check: (fields) => {
+        const existUser = UserModel.findOne({ login: fields.login })
         if (existUser) return true
       }
     },
@@ -117,7 +115,7 @@ export default {
 
     password_invalid: {
       subject: 'password',
-      check: async (fields) => {
+      check: (fields) => {
         const regValidPassword = /^[a-zA-Z0-9]\w{3,14}$/
         const testedPassword = regValidPassword.test(fields.password)
         if (!testedPassword)
@@ -134,7 +132,7 @@ export default {
 
     role_invalid: {
       subject: 'role',
-      check: async (fields) => {
+      check: (fields) => {
         if (fields.role !== 'admin' && fields.role !== 'researcher' && fields.role !== 'curator')
           return true
         
@@ -154,8 +152,8 @@ export default {
 
     user_not_found_by_id: {
       subject: 'userId',
-      check: async (fields) => {
-        const user = await UserModel.findOne({ _id: fields.userId })
+      check: (fields) => {
+        const user = UserModel.findOne({ _id: fields.userId })
         if (!user)
           return true
       }
@@ -174,7 +172,7 @@ export default {
     card_not_found_by_id: {
       subject: 'cardId',
       check: async (fields) => {
-        const card = await CardModel.findOne({ _id: fields.cardId })
+        const card = CardModel.findOne({ _id: fields.cardId })
         if (!card)
           return true
       }
@@ -193,7 +191,7 @@ export default {
     department_not_found_by_id: {
       subject: 'departmentId',
       check: async (fields) => {
-        const department = await DepartmentModel.findOne({ _id: fields.departmentId })
+        const department = DepartmentModel.findOne({ _id: fields.departmentId })
         if (!department)
           return true
       }
@@ -202,7 +200,7 @@ export default {
     department_id_used: {
       subject: 'departmentId',
       check: async (fields) => {
-        const users = await UserModel.find({ departmentId: fields.departmentId })
+        const users = UserModel.find({ departmentId: fields.departmentId })
         if (users.length > 0)
           return true
       }
@@ -221,7 +219,7 @@ export default {
     item_not_found_by_id: {
       subject: 'itemId',
       check: async (fields) => {
-        const item = await ItemModel.findOne({ _id: fields.itemId })
+        const item = ItemModel.findOne({ _id: fields.itemId })
         if (!item)
           return true
       }

@@ -6,9 +6,9 @@ import UserModel from './model'
 import DepartmentModel from '../Department/model'
 
 
-export const SignIn = async (req, res) => {
+export const SignIn = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'login_required', 'login_invalid',
@@ -26,7 +26,7 @@ export const SignIn = async (req, res) => {
   const password = req.body.password
 
   // Проверяем наличие пользователя в базе
-  const user = await UserModel.findOne({ login })
+  const user = UserModel.findOne({ login })
   if (!user) return res.json({
     success: false,
     response: {
@@ -47,7 +47,7 @@ export const SignIn = async (req, res) => {
   })
 
   // Проверяем пароль
-  const comparePassword = await user.ComparePassword(password)
+  const comparePassword = user.ComparePassword(password)
   if (!comparePassword) return res.json({
     success: false,
     response: {
@@ -59,7 +59,7 @@ export const SignIn = async (req, res) => {
 
   user.password = 0
 
-  const token = await jsonwebtoken.sign({ _id: user._id }, 'secret')
+  const token = jsonwebtoken.sign({ _id: user._id }, 'secret')
   
   return res.json({
     success: true,
@@ -70,16 +70,16 @@ export const SignIn = async (req, res) => {
   })
 }
 
-export const GetCurrentUserByJwt = async (req, res) => {
+export const GetCurrentUserByJwt = (req, res) => {
   return res.json({
     success: true,
     response: req.user
   })
 }
 
-export const Create = async (req, res) => {
+export const Create = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'login_required', 'login_invalid', 'login_already_exist',
@@ -103,7 +103,7 @@ export const Create = async (req, res) => {
   const role = req.body.role
 
   try {
-    const createdUser = await UserModel.create({
+    const createdUser = UserModel.create({
       login,
       name,
       password,
@@ -129,9 +129,9 @@ export const Create = async (req, res) => {
   }
 }
 
-export const GetList = async (req, res) => {
+export const GetList = (req, res) => {
   try {
-    const users = await UserModel.find()
+    const users = UserModel.find()
 
     for (let i = 0; i < users.length; i++) {
       let user = users[i]
@@ -154,9 +154,9 @@ export const GetList = async (req, res) => {
   }
 }
 
-export const Remove = async (req, res) => {
+export const Remove = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'user_id_required', 'user_id_invalid', 'user_not_found_by_id'
@@ -190,9 +190,9 @@ export const Remove = async (req, res) => {
   }
 }
 
-export const Block = async (req, res) => {
+export const Block = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'user_id_required', 'user_id_invalid', 'user_not_found_by_id'
@@ -209,7 +209,7 @@ export const Block = async (req, res) => {
 
   // Блокируем пользователя
   try {
-    const user = await UserModel.findOne({ _id: userId })
+    const user = UserModel.findOne({ _id: userId })
     user.blocked = !user.blocked
     await user.save()
 
@@ -231,9 +231,9 @@ export const Block = async (req, res) => {
   }
 }
 
-export const UpdatePassword = async (req, res) => {
+export const UpdatePassword = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'user_id_required', 'user_id_invalid', 'user_not_found_by_id',
@@ -252,7 +252,7 @@ export const UpdatePassword = async (req, res) => {
 
   // Заменяем пароль пользователя в БД
   try {
-    const user = await UserModel.findOne({ _id: userId })
+    const user = UserModel.findOne({ _id: userId })
     user.password = password
     await user.save()
 
@@ -274,9 +274,9 @@ export const UpdatePassword = async (req, res) => {
   }
 }
 
-export const Update = async (req, res) => {
+export const Update = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'name_required', 'name_invalid',
@@ -298,7 +298,7 @@ export const Update = async (req, res) => {
 
   // Заменяем подразделение пользователя в БД
   try {
-    const user = await UserModel.findOne({ _id: userId })
+    const user = UserModel.findOne({ _id: userId })
     user.departmentId = departmentId
     user.name = name
     user.blocked = blocked
@@ -322,7 +322,7 @@ export const Update = async (req, res) => {
   }
 }
 
-// export const CreateSuperUser = async (req, res) => {
+// export const CreateSuperUser = (req, res) => {
 //   const createdDepartment = await DepartmentModel.create({
 //     label: 'admin'
 //   })

@@ -3,9 +3,9 @@ import Validation from '../../modules/Validation'
 import DepartmentModel from './model'
 
 
-export const Create = async (req, res) => {
+export const Create = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'label_required', 'label_invalid'
@@ -22,7 +22,7 @@ export const Create = async (req, res) => {
   
   // Создаем подразделение
   try {
-    const createdDepartment = await DepartmentModel.create({
+    const createdDepartment = DepartmentModel.create({
       label
     })
 
@@ -42,9 +42,9 @@ export const Create = async (req, res) => {
   }
 }
 
-export const GetList = async (req, res) => {
+export const GetList = (req, res) => {
   try {
-    const departments = await DepartmentModel.find()
+    const departments = DepartmentModel.find()
 
     return res.json({
       success: true,
@@ -62,9 +62,9 @@ export const GetList = async (req, res) => {
   }
 }
 
-export const Update = async (req, res) => {
+export const Update = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'department_id_required', 'department_id_invalid', 'department_not_found_by_id',
@@ -83,9 +83,9 @@ export const Update = async (req, res) => {
   
   // Обновляем подразделение
   try {
-    const department = await DepartmentModel.findOne({ _id: departmentId })
+    const department = DepartmentModel.findOne({ _id: departmentId })
     department.label = label
-    await department.save()
+    department.save()
 
     return res.json({
       success: true,
@@ -103,9 +103,9 @@ export const Update = async (req, res) => {
   }
 }
 
-export const Remove = async (req, res) => {
+export const Remove = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'department_id_required', 'department_id_invalid',
@@ -123,7 +123,7 @@ export const Remove = async (req, res) => {
 
   // Удаляем подразделение
   try {
-    await DepartmentModel.deleteOne({ _id: departmentId })
+    DepartmentModel.deleteOne({ _id: departmentId })
     
     return res.json({
       success: true

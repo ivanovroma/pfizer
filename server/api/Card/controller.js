@@ -6,9 +6,9 @@ import FormModel from './blocks/Form/model'
 import ItemModel from './blocks/Item/model'
 
 
-export const Create = async (req, res) => {
+export const Create = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'name_required', 'name_invalid',
@@ -17,6 +17,8 @@ export const Create = async (req, res) => {
       'department_id_required', 'department_id_invalid', 'department_not_found_by_id'
     ]
   })
+
+  console.log(error)
 
   if (error) return res.json({
     success: false,
@@ -29,41 +31,30 @@ export const Create = async (req, res) => {
   const userId = req.body.userId
   const departmentId = req.body.departmentId
 
-  const cards = await CardModel.find()
-  const index = await Iterator.getIndex(cards)
+  const cards = CardModel.find()
+  const index = Iterator.getIndex(cards)
   
   // Создаем карту
-  try {
-    const createdCard = await CardModel.create({
-      name,
-      birthDay,
-      userId,
-      departmentId,
-      index
-    })
+  const createdCard = CardModel.create({
+    name,
+    birthDay,
+    userId,
+    departmentId,
+    index
+  })
 
-    return res.json({
-      success: true,
-      response: createdCard
-    })
-  } catch (e) {
-    return res.json({
-      success: false,
-      response: {
-        object: 'database',
-        subject: 'create_test',
-        message: 'create_error'
-      }
-    })
-  }
+  return res.json({
+    success: true,
+    response: createdCard
+  })
 }
 
-export const GetList = async (req, res) => {
+export const GetList = (req, res) => {
 
   let searchQueryName = req.body.searchQueryName
   
   if (searchQueryName && searchQueryName.length > 0) {
-    const cards = await CardModel.find( { 'name' : { '$regex' : searchQueryName, '$options' : 'i' } })
+    const cards = CardModel.find( { 'name' : { '$regex' : searchQueryName, '$options' : 'i' } })
 
     return res.json({
       success: true,
@@ -77,7 +68,7 @@ export const GetList = async (req, res) => {
   }
   
   try {
-    let cards = await CardModel.find()
+    let cards = CardModel.find()
     
     let pages = 1
     let length = cards.length
@@ -92,7 +83,7 @@ export const GetList = async (req, res) => {
 
     const skip = (page - 1) * limit
 
-    cards = await CardModel.find().skip(skip).limit(limit)
+    cards = CardModel.find().skip(skip).limit(limit)
 
     return res.json({
       success: true,
@@ -115,9 +106,9 @@ export const GetList = async (req, res) => {
   }
 }
 
-export const Update = async (req, res) => {
+export const Update = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'test_id_required', 'test_id_invalid', 'test_not_found_by_id',
@@ -136,9 +127,9 @@ export const Update = async (req, res) => {
   
   // Обновляем тест
   try {
-    const test = await CardModel.findOne({ _id: testId })
+    const test = CardModel.findOne({ _id: testId })
     test.label = label
-    await test.save()
+    test.save()
 
     return res.json({
       success: true,
@@ -156,9 +147,9 @@ export const Update = async (req, res) => {
   }
 }
 
-export const Remove = async (req, res) => {
+export const Remove = (req, res) => {
   // Валидируем полученные данные
-  const error = await Validation.Check({
+  const error = Validation.Check({
     fields: req.body,
     rules: [
       'card_id_required', 'card_id_invalid',
@@ -176,9 +167,9 @@ export const Remove = async (req, res) => {
 
   // Удаляем карту
   try {
-    await CardModel.deleteOne({ _id: cardId })
-    await FormModel.deleteMany({ cardId: cardId })
-    await ItemModel.deleteMany({ cardId: cardId })
+    CardModel.deleteOne({ _id: cardId })
+    FormModel.deleteMany({ cardId: cardId })
+    ItemModel.deleteMany({ cardId: cardId })
     
     return res.json({
       success: true
